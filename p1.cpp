@@ -15,21 +15,40 @@ struct PURCHASE {
   float Total;
 } purchase;
 
-float eReg(float vehiclePrice, float vehicleTax) {
-  if (vehicleTax < 0) {
+float eRegPre(float vehiclePrice, float vehicleTax) {
+  if (vehiclePrice < 0 || vehicleTax < 0) {
     return 0.0;
   }
   return vehiclePrice * vehicleTax / 100.0;
 }
 
-void test_eReg() {
-  assert(eReg(2.0, 50.0) == 1.0);
-  assert(eReg(3.0, 100.0) == 3.0);
-  assert(eReg(123.123, -3.0) == 0.0);
+float eInt(float vehiclePrice, float vehicleTax, float vehicleInterest) {
+  if (vehiclePrice < 0 || vehicleTax < 0 || vehicleInterest < 0) {
+    return 0.0;
+  }
+  return ((vehiclePrice - eRegPre(vehiclePrice, vehicleTax)) * vehicleInterest /
+          100.0) /
+         12.0;
+}
+
+void test_eRegPre() {
+  assert(eRegPre(2.0, 50.0) == 1.0);
+  assert(eRegPre(3.0, 100.0) == 3.0);
+  assert(eRegPre(123.123, -3.0) == 0.0);
+  assert(eRegPre(-3.0, 123.123) == 0.0);
+  assert(eRegPre(-3.0, -3.0) == 0.0);
+}
+
+void test_eInt() {
+  assert(eInt(1.0, 2.0, -1.0) == 0.0);
+  assert(eInt(1.0, -2.0, 1.0) == 0.0);
+  assert(eInt(-1.0, 2.0, 1.0) == 0.0);
+  assert(eInt(2.0, 50.0, 1200.0) == 1.0);
 }
 
 int main() {
-  test_eReg();
+  test_eRegPre();
+  test_eInt();
   PURCHASE firstPurchase;
   firstPurchase.ID = 1;
   firstPurchase.OriginalValue = 2.0;
